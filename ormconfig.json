@@ -3,7 +3,7 @@
   "host": "localhost",
   "port": 3306,
   "username": "root",
-  "password": "tall4gab",
+  "password": "",
   "database": "notodo",
   "synchronize": true,
   "logging": false,

@@ -7,10 +7,13 @@ import * as bodyParser from 'body-parser'
 import * as passport from 'passport'
 import * as passportJWT from 'passport-jwt'
 
+import { check, validationResult } from 'express-validator'
+
 import { createConnection, getRepository } from 'typeorm'
 
 import { login } from './routes/auth'
 import { User } from './entity/User'
+import { Todo } from './entity/Todo'
 
 createConnection().then(connection => {
   const app = express()
@@ -35,12 +38,52 @@ createConnection().then(connection => {
   app.use(bodyParser.urlencoded({ extended: true }))
 
   app.get('/', (req, res) => {
-    res.json({ message: 'Hello world' })
+    res.json({ message: 'NoToDo' })
   })
 
-  app.get('/protected', passport.authenticate('jwt', { session: false }), (req, res) => {
+  app.get('/todos', passport.authenticate('jwt', { session: false }), async (req, res) => {
     const user = req.user as User
-    res.json({ message: user && user.userName ? `hello ${user.userName}` : 'hello anonymous' })
+    const todoRepository = getRepository(Todo)
+    const todos = await todoRepository.find({ where: { user } })
+    res.json({ todos: todos || [] })
+  })
+
+  app.post(
+    '/todo',
+    [passport.authenticate('jwt', { session: false }), check('title').isAlphanumeric()],
+    async (req, res) => {
+      const errors = validationResult(req)
+      if (!errors.isEmpty()) {
+        return res.status(422).json({ success: 0, errors: errors.array() })
+      }
+
+      const user = req.user as User
+      const { title } = req.body
+      const todo = new Todo()
+      todo.title = title
+      todo.user = user
+      await connection.manager.save(todo)
+      res.json({ success: 1, todo })
+    }
+  )
+
+  app.delete(
+    '/todo/:id',
+    [passport.authenticate('jwt', { session: false }), check('id').isUUID()],
+    async (req, res) => {
+      const errors = validationResult(req)
+      if (!errors.isEmpty()) {
+        return res.status(422).json({ success: 0, errors: errors.array() })
+      }
+      const todoRepository = getRepository(Todo)
+      await todoRepository.delete(req.params.id)
+      res.json({ success: 1, todo: { id: req.params.id } })
+    }
+  )
+
+  app.get('/profile', passport.authenticate('jwt', { session: false }), (req, res) => {
+    const user = req.user as User
+    res.json({ user })
   })
 
   app.post('/login', login(jwtOptions))

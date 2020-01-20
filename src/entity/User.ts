@@ -1,9 +1,14 @@
-import { Entity, PrimaryGeneratedColumn, Column } from 'typeorm'
+import { Entity, PrimaryGeneratedColumn, Column, OneToMany, CreateDateColumn, UpdateDateColumn } from 'typeorm'
+
+import { Todo } from './Todo'
 
 @Entity()
 export class User {
   @PrimaryGeneratedColumn('uuid')
   id!: string
+
+  @CreateDateColumn()
+  createdAt!: Date
 
   @Column('varchar', { length: 200 })
   userName!: string
@@ -16,4 +21,10 @@ export class User {
 
   @Column('varchar', { length: 200 })
   lastName!: string
+
+  @OneToMany(
+    type => Todo,
+    todo => todo.user
+  )
+  todos!: Promise<Todo[]>
 }

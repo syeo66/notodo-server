@@ -12,7 +12,7 @@
     "build": "tsc",
     "typeorm": "ts-node -r tsconfig-paths/register ./node_modules/typeorm/cli.js",
     "migrate": "ts-node -r tsconfig-paths/register ./node_modules/typeorm/cli.js migration:run",
-    "create-migration": "ts-node -r tsconfig-paths/register ./node_modules/typeorm/cli.js migration:create -n"
+    "generate-migration": "ts-node -r tsconfig-paths/register ./node_modules/typeorm/cli.js migration:generate -n"
   },
   "dependencies": {
     "@types/bcrypt": "^3.0.0",
@@ -24,6 +24,7 @@
     "bcrypt": "^3.0.7",
     "body-parser": "^1.19.0",
     "express": "^4.17.1",
+    "express-validator": "^6.3.1",
     "jsonwebtoken": "^8.5.1",
     "mysql2": "^2.1.0",
     "passport": "^0.4.1",
