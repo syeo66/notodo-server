@@ -11,6 +11,6 @@
   "migrations": ["src/migration/**/*.ts"],
   "subscribers": ["src/subscriber/**/*.ts"],
   "cli": {
-    "migrationsDir": "migration"
+    "migrationsDir": "src/migration/"
   }
 }

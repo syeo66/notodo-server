@@ -12,7 +12,7 @@
     "build": "tsc",
     "typeorm": "ts-node -r tsconfig-paths/register ./node_modules/typeorm/cli.js",
     "migrate": "ts-node -r tsconfig-paths/register ./node_modules/typeorm/cli.js migration:run",
-    "create-migration": "ts-node -r tsconfig-paths/register ./node_modules/typeorm/cli.js migration:generate -- -n"
+    "create-migration": "ts-node -r tsconfig-paths/register ./node_modules/typeorm/cli.js migration:create -n"
   },
   "dependencies": {
     "@types/express": "^4.17.2",
