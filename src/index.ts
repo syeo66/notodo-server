@@ -67,6 +67,16 @@ createConnection().then(connection => {
     }
   )
 
+  app.get('/todo/:id', [passport.authenticate('jwt', { session: false }), check('id').isUUID()], async (req, res) => {
+    const errors = validationResult(req)
+    if (!errors.isEmpty()) {
+      return res.status(422).json({ success: 0, errors: errors.array() })
+    }
+    const todoRepository = getRepository(Todo)
+    const todo = await todoRepository.findOne(req.params.id)
+    res.json({ success: !todo ? 0 : 1, todo: todo || null })
+  })
+
   app.delete(
     '/todo/:id',
     [passport.authenticate('jwt', { session: false }), check('id').isUUID()],
