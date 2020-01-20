@@ -7,41 +7,47 @@ import * as bodyParser from 'body-parser'
 import * as passport from 'passport'
 import * as passportJWT from 'passport-jwt'
 
+import { createConnection, getRepository } from 'typeorm'
+
 import { login } from './routes/auth'
+import { User } from './entity/User'
 
-const app = express()
+createConnection().then(connection => {
+  const app = express()
 
-const ExtractJwt = passportJWT.ExtractJwt
-const JwtStrategy = passportJWT.Strategy
-const jwtOptions = {
-  jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
-  secretOrKey: '5952FC21-FB3A-481E-9085-5279B54E0644',
-}
+  const ExtractJwt = passportJWT.ExtractJwt
+  const JwtStrategy = passportJWT.Strategy
+  const jwtOptions = {
+    jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
+    secretOrKey: '5952FC21-FB3A-481E-9085-5279B54E0644',
+  }
 
-const strategy = new JwtStrategy(jwtOptions, (jwtPayload, next) => {
-  console.log('payload received', jwtPayload)
-  next(null, { id: 1, userName: 'red' })
-})
-passport.use(strategy)
+  const strategy = new JwtStrategy(jwtOptions, async (jwtPayload, next) => {
+    const userRepository = getRepository(User)
+    const user = await userRepository.findOne(jwtPayload.id)
+    next(null, { ...user, password: '*****' })
+  })
+  passport.use(strategy)
 
-app.use(passport.initialize())
+  app.use(passport.initialize())
 
-app.use(bodyParser.json())
-app.use(bodyParser.urlencoded({ extended: true }))
+  app.use(bodyParser.json())
+  app.use(bodyParser.urlencoded({ extended: true }))
 
-app.get('/', (req, res) => {
-  res.json({ message: 'Hello world' })
-})
+  app.get('/', (req, res) => {
+    res.json({ message: 'Hello world' })
+  })
 
-app.get('/protected', passport.authenticate('jwt', { session: false }), (req, res) => {
-  const user = req.user as { userName: string }
-  res.json({ message: user && user.userName ? `hello ${user.userName}` : 'hello anonymous' })
-})
+  app.get('/protected', passport.authenticate('jwt', { session: false }), (req, res) => {
+    const user = req.user as User
+    res.json({ message: user && user.userName ? `hello ${user.userName}` : 'hello anonymous' })
+  })
 
-app.post('/login', login(jwtOptions))
+  app.post('/login', login(jwtOptions))
 
-const PORT = process.env.port || 3000
+  const PORT = process.env.port || 3000
 
-app.listen(PORT, () => {
-  console.log(`Server is running on http://localhost:${PORT}`)
+  app.listen(PORT, () => {
+    console.log(`Server is running on http://localhost:${PORT}`)
+  })
 })
