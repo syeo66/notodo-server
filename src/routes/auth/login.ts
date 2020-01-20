@@ -21,7 +21,7 @@ export const login = (jwtOptions: { secretOrKey: string }) => async (req: Reques
       let token = sign(payload, jwtOptions.secretOrKey)
       res.json({ message: 'ok', token: token })
     } else {
-      res.status(401).json({ message: 'Password is incorrect' })
+      res.status(401).json({ message: 'Credentials are incorrect' })
     }
     return
   }
