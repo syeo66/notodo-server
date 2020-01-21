@@ -9,14 +9,13 @@ import * as passportJWT from 'passport-jwt'
 
 import * as cors from 'cors'
 
-import { check, validationResult } from 'express-validator'
+import { check } from 'express-validator'
 
 import { createConnection, getRepository } from 'typeorm'
 
 import { login } from './routes/auth'
 import { User } from './entity/User'
-import { Todo } from './entity/Todo'
-import { createTodo, getTodos, getTodo } from './routes/todos'
+import { createTodo, getTodos, getTodo, deleteTodo } from './routes/todos'
 
 createConnection().then(connection => {
   const app = express()
@@ -48,20 +47,7 @@ createConnection().then(connection => {
   app.get('/todos', passport.authenticate('jwt', { session: false }), getTodos)
   app.post('/todo', [passport.authenticate('jwt', { session: false }), check('title').isAlphanumeric()], createTodo)
   app.get('/todo/:id', [passport.authenticate('jwt', { session: false }), check('id').isUUID()], getTodo)
-
-  app.delete(
-    '/todo/:id',
-    [passport.authenticate('jwt', { session: false }), check('id').isUUID()],
-    async (req, res) => {
-      const errors = validationResult(req)
-      if (!errors.isEmpty()) {
-        return res.status(422).json({ success: 0, errors: errors.array() })
-      }
-      const todoRepository = getRepository(Todo)
-      await todoRepository.delete(req.params.id)
-      res.json({ success: 1, todo: { id: req.params.id } })
-    }
-  )
+  app.delete('/todo/:id', [passport.authenticate('jwt', { session: false }), check('id').isUUID()], deleteTodo)
 
   app.get('/profile', passport.authenticate('jwt', { session: false }), (req, res) => {
     const user = req.user as User
