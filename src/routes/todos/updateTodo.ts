@@ -23,6 +23,9 @@ export const updateTodo = async (req: Request, res: Response) => {
   if ('doneAt' in req.body) {
     todo.doneAt = req.body.doneAt
   }
+  if ('scheduledAt' in req.body) {
+    todo.scheduledAt = req.body.scheduledAt
+  }
 
   todoRepository.save(todo)
   res.json({ success: 1, todo: todo || null })

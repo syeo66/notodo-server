@@ -11,6 +11,9 @@ export class Todo {
   createdAt!: Date
 
   @Column('datetime', { nullable: true })
+  scheduledAt!: Date
+
+  @Column('datetime', { nullable: true })
   doneAt!: Date
 
   @Column('varchar', { length: 200 })

@@ -77,6 +77,10 @@ createConnection().then(connection => {
         .optional({ nullable: true })
         .isISO8601()
         .toDate(),
+      check('scheduledAt')
+        .optional({ nullable: true })
+        .isISO8601()
+        .toDate(),
     ],
     updateTodo
   )
