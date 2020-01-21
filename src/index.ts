@@ -15,7 +15,7 @@ import { createConnection, getRepository } from 'typeorm'
 
 import { login } from './routes/auth'
 import { User } from './entity/User'
-import { createTodo, getTodos, getTodo, deleteTodo } from './routes/todos'
+import { createTodo, getTodos, getTodo, deleteTodo, updateTodo } from './routes/todos'
 
 createConnection().then(connection => {
   const app = express()
@@ -45,9 +45,41 @@ createConnection().then(connection => {
   })
 
   app.get('/todos', passport.authenticate('jwt', { session: false }), getTodos)
-  app.post('/todo', [passport.authenticate('jwt', { session: false }), check('title').isAlphanumeric()], createTodo)
-  app.get('/todo/:id', [passport.authenticate('jwt', { session: false }), check('id').isUUID()], getTodo)
-  app.delete('/todo/:id', [passport.authenticate('jwt', { session: false }), check('id').isUUID()], deleteTodo)
+  app.post('/todo', [passport.authenticate('jwt', { session: false }), check('title').notEmpty()], createTodo)
+  app.get(
+    '/todo/:id',
+    [
+      passport.authenticate('jwt', { session: false }),
+      check('id')
+        .notEmpty()
+        .isUUID(),
+    ],
+    getTodo
+  )
+  app.delete(
+    '/todo/:id',
+    [
+      passport.authenticate('jwt', { session: false }),
+      check('id')
+        .notEmpty()
+        .isUUID(),
+    ],
+    deleteTodo
+  )
+  app.put(
+    '/todo/:id',
+    [
+      passport.authenticate('jwt', { session: false }),
+      check('id')
+        .notEmpty()
+        .isUUID(),
+      check('doneAt')
+        .optional({ nullable: true })
+        .isISO8601()
+        .toDate(),
+    ],
+    updateTodo
+  )
 
   app.get('/profile', passport.authenticate('jwt', { session: false }), (req, res) => {
     const user = req.user as User
