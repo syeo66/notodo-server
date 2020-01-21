@@ -9,6 +9,10 @@ import * as passportJWT from 'passport-jwt'
 
 import * as cors from 'cors'
 
+import * as expressGraphQL from 'express-graphql'
+
+import { IncomingMessage } from 'http'
+
 import { check } from 'express-validator'
 
 import { createConnection, getRepository } from 'typeorm'
@@ -17,12 +21,12 @@ import { login } from './routes/auth'
 import { User } from './entity/User'
 import { createTodo, getTodos, getTodo, deleteTodo, updateTodo, getCurrentTodos, getTodosByDate } from './routes/todos'
 
-const isValidDate = (value: string) => {
-  if (!value.match(/^\d{4}-\d{2}-\d{2}$/)) return false
+import resolvers from './resolvers'
+import schema from './schema'
 
-  const date = new Date(value)
-  if (!date.getTime()) return false
-  return date.toISOString().slice(0, 10) === value
+const context = (req: IncomingMessage) => {
+  const { authorization: token } = req.headers
+  return { token }
 }
 
 createConnection().then(connection => {
@@ -47,6 +51,16 @@ createConnection().then(connection => {
 
   app.use(bodyParser.json())
   app.use(bodyParser.urlencoded({ extended: true }))
+
+  app.use(
+    '/graphql',
+    expressGraphQL(req => ({
+      schema,
+      graphiql: true,
+      rootValue: resolvers,
+      context: () => context(req),
+    }))
+  )
 
   app.get('/', (req, res) => {
     res.json({ message: 'NoToDo' })
