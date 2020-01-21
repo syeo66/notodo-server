@@ -7,6 +7,8 @@ import * as bodyParser from 'body-parser'
 import * as passport from 'passport'
 import * as passportJWT from 'passport-jwt'
 
+import * as cors from 'cors'
+
 import { check, validationResult } from 'express-validator'
 
 import { createConnection, getRepository } from 'typeorm'
@@ -34,6 +36,7 @@ createConnection().then(connection => {
   passport.use(strategy)
 
   app.use(passport.initialize())
+  app.use(cors())
 
   app.use(bodyParser.json())
   app.use(bodyParser.urlencoded({ extended: true }))
