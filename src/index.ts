@@ -17,7 +17,7 @@ import { check } from 'express-validator'
 
 import { createConnection, getRepository } from 'typeorm'
 
-import { login } from './routes/auth'
+import { login, register } from './routes/auth'
 import { User } from './entity/User'
 import { createTodo, getTodos, getTodo, deleteTodo, updateTodo, getCurrentTodos, getTodosByDate } from './routes/todos'
 
@@ -125,6 +125,31 @@ createConnection().then(connection => {
   })
 
   app.post('/login', login(jwtOptions))
+  app.post(
+    '/register',
+    [
+      check('name')
+        .notEmpty()
+        .isAlphanumeric()
+        .isLength({ min: 5, max: 200 }),
+      check('password')
+        .notEmpty()
+        .isLength({ min: 6 }),
+      check('email')
+        .notEmpty()
+        .isEmail()
+        .isLength({ max: 200 }),
+      check('firstname')
+        .notEmpty()
+        .isAlpha()
+        .isLength({ max: 200 }),
+      check('lastname')
+        .notEmpty()
+        .isAlpha()
+        .isLength({ max: 200 }),
+    ],
+    register
+  )
 
   const PORT = process.env.port || 3000
 

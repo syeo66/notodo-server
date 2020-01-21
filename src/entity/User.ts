@@ -22,6 +22,9 @@ export class User {
   @Column('varchar', { length: 200 })
   lastName!: string
 
+  @Column('varchar', { length: 200 })
+  email!: string
+
   @OneToMany(
     type => Todo,
     todo => todo.user
