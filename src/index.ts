@@ -15,7 +15,15 @@ import { createConnection, getRepository } from 'typeorm'
 
 import { login } from './routes/auth'
 import { User } from './entity/User'
-import { createTodo, getTodos, getTodo, deleteTodo, updateTodo, getCurrentTodos } from './routes/todos'
+import { createTodo, getTodos, getTodo, deleteTodo, updateTodo, getCurrentTodos, getTodosByDate } from './routes/todos'
+
+const isValidDate = (value: string) => {
+  if (!value.match(/^\d{4}-\d{2}-\d{2}$/)) return false
+
+  const date = new Date(value)
+  if (!date.getTime()) return false
+  return date.toISOString().slice(0, 10) === value
+}
 
 createConnection().then(connection => {
   const app = express()
@@ -44,8 +52,19 @@ createConnection().then(connection => {
     res.json({ message: 'NoToDo' })
   })
 
-  app.get('/todos', passport.authenticate('jwt', { session: false }), getTodos)
   app.get('/todos/current', passport.authenticate('jwt', { session: false }), getCurrentTodos)
+  app.get(
+    '/todos/:date',
+    [
+      passport.authenticate('jwt', { session: false }),
+      check('date')
+        .isISO8601()
+        .toDate(),
+    ],
+    getTodosByDate
+  )
+  app.get('/todos', passport.authenticate('jwt', { session: false }), getTodos)
+
   app.post('/todo', [passport.authenticate('jwt', { session: false }), check('title').notEmpty()], createTodo)
   app.get(
     '/todo/:id',
