@@ -16,7 +16,7 @@ import { createConnection, getRepository } from 'typeorm'
 import { login } from './routes/auth'
 import { User } from './entity/User'
 import { Todo } from './entity/Todo'
-import { createTodo } from './routes/todos'
+import { createTodo, getTodos, getTodo } from './routes/todos'
 
 createConnection().then(connection => {
   const app = express()
@@ -45,24 +45,9 @@ createConnection().then(connection => {
     res.json({ message: 'NoToDo' })
   })
 
-  app.get('/todos', passport.authenticate('jwt', { session: false }), async (req, res) => {
-    const user = req.user as User
-    const todoRepository = getRepository(Todo)
-    const todos = await todoRepository.find({ where: { user } })
-    res.json({ todos: todos || [] })
-  })
-
+  app.get('/todos', passport.authenticate('jwt', { session: false }), getTodos)
   app.post('/todo', [passport.authenticate('jwt', { session: false }), check('title').isAlphanumeric()], createTodo)
-
-  app.get('/todo/:id', [passport.authenticate('jwt', { session: false }), check('id').isUUID()], async (req, res) => {
-    const errors = validationResult(req)
-    if (!errors.isEmpty()) {
-      return res.status(422).json({ success: 0, errors: errors.array() })
-    }
-    const todoRepository = getRepository(Todo)
-    const todo = await todoRepository.findOne(req.params.id)
-    res.json({ success: !todo ? 0 : 1, todo: todo || null })
-  })
+  app.get('/todo/:id', [passport.authenticate('jwt', { session: false }), check('id').isUUID()], getTodo)
 
   app.delete(
     '/todo/:id',
