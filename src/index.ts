@@ -15,7 +15,7 @@ import { createConnection, getRepository } from 'typeorm'
 
 import { login } from './routes/auth'
 import { User } from './entity/User'
-import { createTodo, getTodos, getTodo, deleteTodo, updateTodo } from './routes/todos'
+import { createTodo, getTodos, getTodo, deleteTodo, updateTodo, getCurrentTodos } from './routes/todos'
 
 createConnection().then(connection => {
   const app = express()
@@ -45,6 +45,7 @@ createConnection().then(connection => {
   })
 
   app.get('/todos', passport.authenticate('jwt', { session: false }), getTodos)
+  app.get('/todos/current', passport.authenticate('jwt', { session: false }), getCurrentTodos)
   app.post('/todo', [passport.authenticate('jwt', { session: false }), check('title').notEmpty()], createTodo)
   app.get(
     '/todo/:id',
