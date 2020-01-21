@@ -14,6 +14,7 @@ import { createConnection, getRepository } from 'typeorm'
 import { login } from './routes/auth'
 import { User } from './entity/User'
 import { Todo } from './entity/Todo'
+import { createTodo } from './routes/todos'
 
 createConnection().then(connection => {
   const app = express()
@@ -48,24 +49,7 @@ createConnection().then(connection => {
     res.json({ todos: todos || [] })
   })
 
-  app.post(
-    '/todo',
-    [passport.authenticate('jwt', { session: false }), check('title').isAlphanumeric()],
-    async (req, res) => {
-      const errors = validationResult(req)
-      if (!errors.isEmpty()) {
-        return res.status(422).json({ success: 0, errors: errors.array() })
-      }
-
-      const user = req.user as User
-      const { title } = req.body
-      const todo = new Todo()
-      todo.title = title
-      todo.user = user
-      await connection.manager.save(todo)
-      res.json({ success: 1, todo })
-    }
-  )
+  app.post('/todo', [passport.authenticate('jwt', { session: false }), check('title').isAlphanumeric()], createTodo)
 
   app.get('/todo/:id', [passport.authenticate('jwt', { session: false }), check('id').isUUID()], async (req, res) => {
     const errors = validationResult(req)
