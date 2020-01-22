@@ -8,6 +8,8 @@ import * as passport from 'passport'
 import * as passportJWT from 'passport-jwt'
 
 import * as cors from 'cors'
+import * as compression from 'compression'
+import * as helmet from 'helmet'
 
 import * as expressGraphQL from 'express-graphql'
 
@@ -48,6 +50,8 @@ createConnection().then(connection => {
 
   app.use(passport.initialize())
   app.use(cors())
+  app.use(compression())
+  app.use(helmet())
 
   app.use(bodyParser.json())
   app.use(bodyParser.urlencoded({ extended: true }))
