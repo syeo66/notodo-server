@@ -1,6 +1,6 @@
 {
-  "name": "notodo",
-  "version": "0.0.1",
+  "name": "notodo-server",
+  "version": "0.1.0",
   "description": "A ToDo/Done server",
   "main": "src/index.ts",
   "author": "Red Ochsenbein <red@redochsenbein.ch>",
