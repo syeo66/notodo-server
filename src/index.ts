@@ -38,7 +38,7 @@ createConnection().then(connection => {
   const JwtStrategy = passportJWT.Strategy
   const jwtOptions = {
     jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
-    secretOrKey: '5952FC21-FB3A-481E-9085-5279B54E0644',
+    secretOrKey: process.env.SECRET || 'YOU_SHOULD_ABSOLUTELY_USE_THE_DOT_ENV',
   }
 
   const strategy = new JwtStrategy(jwtOptions, async (jwtPayload, next) => {
