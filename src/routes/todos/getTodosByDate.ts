@@ -21,6 +21,8 @@ export const getTodosByDate = async (req: Request, res: Response) => {
     .createQueryBuilder('todo')
     .andWhere('userId = :userId', { userId: user.id })
     .andWhere('((doneAt >= :start AND doneAt <= :end) OR (scheduledAt >= :start AND scheduledAt <= :end))')
+    .orderBy('doneAt', 'DESC')
+    .addOrderBy('rank', 'ASC')
     .setParameters(dayRange)
 
   const todos = await todoQueryBuilder.getMany()
