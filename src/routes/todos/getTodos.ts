@@ -11,7 +11,7 @@ export const getTodos = async (req: Request, res: Response) => {
   const todoQueryBuilder = todoRepository
     .createQueryBuilder('todo')
     .andWhere('userId = :userId', { userId: user.id })
-    .orderBy('doneAt', 'DESC')
+    .orderBy('-doneAt', 'DESC')
     .addOrderBy('rank', 'ASC')
 
   const todos = await todoQueryBuilder.getMany()
