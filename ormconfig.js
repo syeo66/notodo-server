@@ -7,7 +7,7 @@ module.exports = {
   database: process.env.TYPEORM_DATABASE,
   synchronize: true,
   logging: false,
-  entities: [`${__dirname}/{dist,src}/entity/**/*{.ts,js}`],
+  entities: [`${__dirname}/${process.env.ENTITY_BASE}/entity/**/*{.ts,js}`],
   migrations: ['src/migration/**/*.ts'],
   subscribers: ['src/subscriber/**/*.ts'],
   cli: {

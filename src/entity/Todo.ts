@@ -19,6 +19,9 @@ export class Todo {
   @Column('varchar', { length: 200 })
   title!: string
 
+  @Column('varchar', { length: 255 })
+  rank!: string
+
   @ManyToOne(
     type => User,
     user => user.todos
