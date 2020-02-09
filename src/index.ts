@@ -83,7 +83,18 @@ createConnection().then(connection => {
   )
   app.get('/todos', passport.authenticate('jwt', { session: false }), getTodos)
 
-  app.post('/todo', [passport.authenticate('jwt', { session: false }), check('title').notEmpty()], createTodo)
+  app.post(
+    '/todo',
+    [
+      passport.authenticate('jwt', { session: false }),
+      check('title').notEmpty(),
+      check('scheduledAt')
+        .optional({ nullable: true })
+        .isISO8601()
+        .toDate(),
+    ],
+    createTodo
+  )
   app.get(
     '/todo/:id',
     [

@@ -15,7 +15,7 @@ export const createTodo = async (req: Request, res: Response) => {
 
   const user = req.user as User
   const todoRepository = getRepository(Todo)
-  const { title } = req.body
+  const { title, scheduledAt } = req.body
 
   const todoQueryBuilder = todoRepository
     .createQueryBuilder('todo')
@@ -29,6 +29,7 @@ export const createTodo = async (req: Request, res: Response) => {
   const todo = new Todo()
   todo.title = title
   todo.user = user
+  todo.scheduledAt = scheduledAt
   todo.rank = lexoRank.toString()
   await connection.manager.save(todo)
   res.json({ success: 1, todo })
