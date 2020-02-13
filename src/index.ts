@@ -122,6 +122,7 @@ createConnection().then(connection => {
       check('id')
         .notEmpty()
         .isUUID(),
+      check('title').optional({ nullable: false }),
       check('doneAt')
         .optional({ nullable: true })
         .isISO8601()

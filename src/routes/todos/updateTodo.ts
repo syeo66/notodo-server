@@ -17,7 +17,7 @@ export const updateTodo = async (req: Request, res: Response) => {
     return res.status(422).json({ success: 0, errors: ['Todo not found'] })
   }
 
-  if (req.body.title) {
+  if ('title' in req.body) {
     todo.title = req.body.title
   }
   if ('doneAt' in req.body) {
