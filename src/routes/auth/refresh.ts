@@ -1,9 +1,9 @@
 import { Response, Request } from 'express'
-import { verify, sign } from 'jsonwebtoken'
+import { verify } from 'jsonwebtoken'
 import { validationResult } from 'express-validator'
-import { fromUnixTime } from 'date-fns'
 
 import { User } from '../../entity/User'
+import { createToken } from './token'
 
 export const refresh = (jwtOptions: { secretOrKey: string }) => (req: Request, res: Response) => {
   const errors = validationResult(req)
@@ -11,29 +11,28 @@ export const refresh = (jwtOptions: { secretOrKey: string }) => (req: Request, r
     return res.status(422).json({ success: 0, errors: errors.array() })
   }
 
-  const payload = verify(req.body.refreshToken, jwtOptions.secretOrKey)
+  const payload: string | { id?: string; aud?: 'access' | 'refresh' } = verify(
+    req.body.refreshToken,
+    jwtOptions.secretOrKey
+  )
 
   if (typeof payload === 'string') {
     return res.status(422).json({ success: 0 })
   }
 
-  const user = req.user as User
-  const newPayload = { id: (payload as { id: string }).id }
+  if (payload.aud !== 'refresh') {
+    return res.status(422).json({ success: 0, errors: ['This is not a refresh token'] })
+  }
 
-  if (!user || user.id !== newPayload.id) {
+  const user = req.user as User
+  if (!user || user.id !== (payload as { id: string }).id) {
     return res.status(422).json({ success: 0 })
   }
 
-  const tokenExpiresIn = 60 * 60
-  const token = sign(newPayload, jwtOptions.secretOrKey, { expiresIn: tokenExpiresIn })
-  const refreshTokenExpiresIn = 24 * 60 * 60
-  const refreshToken = sign(newPayload, jwtOptions.secretOrKey, { expiresIn: refreshTokenExpiresIn })
+  const tokenData = createToken({ user, jwtOptions })
 
   res.json({
     message: 'ok',
-    token,
-    tokenExpiry: fromUnixTime(Math.floor(Date.now() / 1000) + tokenExpiresIn),
-    refreshToken,
-    refreshTokenExpiry: fromUnixTime(Math.floor(Date.now() / 1000) + refreshTokenExpiresIn),
+    ...tokenData,
   })
 }

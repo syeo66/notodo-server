@@ -41,9 +41,12 @@ createConnection().then(connection => {
     secretOrKey: process.env.SECRET || 'YOU_SHOULD_ABSOLUTELY_USE_THE_DOT_ENV',
   }
 
-  const strategy = new JwtStrategy(jwtOptions, async (jwtPayload, next) => {
+  const strategy = new JwtStrategy(jwtOptions, async (jwtPayload: { id: string; aud: 'access' | 'refresh' }, next) => {
     const userRepository = getRepository(User)
     const user = await userRepository.findOne(jwtPayload.id)
+    if (jwtPayload.aud !== 'access') {
+      return next('This is not an access token', {})
+    }
     next(null, { ...user, password: '*****' })
   })
   passport.use(strategy)
