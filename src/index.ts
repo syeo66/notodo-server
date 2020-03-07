@@ -19,7 +19,7 @@ import { check } from 'express-validator'
 
 import { createConnection, getRepository } from 'typeorm'
 
-import { login, register } from './routes/auth'
+import { login, register, refresh } from './routes/auth'
 import { User } from './entity/User'
 import { createTodo, getTodos, getTodo, deleteTodo, updateTodo, getCurrentTodos, getTodosByDate } from './routes/todos'
 
@@ -141,6 +141,16 @@ createConnection().then(connection => {
   })
 
   app.post('/login', login(jwtOptions))
+  app.post(
+    '/refresh',
+    [
+      passport.authenticate('jwt', { session: false }),
+      check('refreshToken')
+        .notEmpty()
+        .isJWT(),
+    ],
+    refresh(jwtOptions)
+  )
   app.post(
     '/register',
     [

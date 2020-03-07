@@ -42,10 +42,11 @@ const schema = buildSchema(`
 
   type Query {
     allTodos: [Todo!]!
-    todos(date: String): [Todo!]!
-    todo(id: String!): Todo!
-    profile: User!
     login(username: String!, password: String!): Token!
+    profile: User!
+    refresh(refreshToken: String!): Token!
+    todo(id: String!): Todo!
+    todos(date: String): [Todo!]!
   }
 
   type Mutation {
