@@ -95,10 +95,14 @@ const resolvers = {
     })
     return response.data
   },
-  refresh: async ({ refreshToken }) => {
+  refresh: async ({ refreshToken }, context) => {
+    const { token } = context()
     const response = await axios({
       url: `http://localhost:${PORT}/refresh`,
       method: 'POST',
+      headers: {
+        Authorization: token,
+      },
       data: new URLSearchParams({ refreshToken }),
     })
     return response.data
