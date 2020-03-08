@@ -39,14 +39,12 @@ createConnection().then(connection => {
   const jwtOptions = {
     jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
     secretOrKey: process.env.SECRET || 'YOU_SHOULD_ABSOLUTELY_USE_THE_DOT_ENV',
+    audience: 'access',
   }
 
   const strategy = new JwtStrategy(jwtOptions, async (jwtPayload: { id: string; aud: 'access' | 'refresh' }, next) => {
     const userRepository = getRepository(User)
     const user = await userRepository.findOne(jwtPayload.id)
-    if (jwtPayload.aud !== 'access') {
-      return next('This is not an access token', {})
-    }
     next(null, { ...user, password: '*****' })
   })
   passport.use(strategy)
@@ -66,6 +64,10 @@ createConnection().then(connection => {
       graphiql: true,
       rootValue: resolvers,
       context: () => context(req),
+      customFormatErrorFn: err => {
+        const extractStatus = /status code ([0-9]{3})/.exec(err.message)
+        return { ...err, statusCode: extractStatus && extractStatus[1] ? Number(extractStatus[1]) : 200 }
+      },
     }))
   )
 

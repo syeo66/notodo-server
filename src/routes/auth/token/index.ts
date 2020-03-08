@@ -2,6 +2,7 @@ import { sign } from 'jsonwebtoken'
 import { fromUnixTime } from 'date-fns'
 
 export const createToken = ({ user, jwtOptions }: { user: { id: string }; jwtOptions: { secretOrKey: string } }) => {
+  // TODO: get iss from .env
   const payload = { sub: user.id, iss: 'tonotodo.com', id: user.id }
 
   const tokenExpiresIn = 60 * 60
