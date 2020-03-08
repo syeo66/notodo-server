@@ -2,6 +2,7 @@ import axios from 'axios'
 import { format } from 'date-fns'
 import { URLSearchParams } from 'url'
 
+// TODO: make hostname configurable, too
 const PORT = process.env.port || 3000
 
 const resolvers = {
@@ -91,6 +92,14 @@ const resolvers = {
       url: `http://localhost:${PORT}/login`,
       method: 'POST',
       data: new URLSearchParams({ name: username, password }),
+    })
+    return response.data
+  },
+  refresh: async ({ refreshToken }) => {
+    const response = await axios({
+      url: `http://localhost:${PORT}/refresh`,
+      method: 'POST',
+      data: new URLSearchParams({ refreshToken }),
     })
     return response.data
   },
