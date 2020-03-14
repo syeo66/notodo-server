@@ -19,6 +19,7 @@ export const login = (jwtOptions: { secretOrKey: string }) => async (req: Reques
       res.cookie('refresh_token', tokenData.refreshToken, {
         httpOnly: true,
         secure: (process.env.NODE_ENV || 'development') !== 'development',
+        expires: tokenData.refreshTokenExpiry,
       })
       res.json({
         success: true,
