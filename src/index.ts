@@ -29,7 +29,6 @@ import schema from './schema'
 
 const context = (req: IncomingMessage, res: OutgoingMessage) => {
   const { authorization: token } = req.headers
-  res.setHeader('cookie', req.headers.cookie || '')
   return { token }
 }
 
