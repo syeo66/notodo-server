@@ -12,18 +12,24 @@ export const login = (jwtOptions: { secretOrKey: string }) => async (req: Reques
   if (name && password) {
     const user = await userRepository.findOne({ where: { userName: name } })
     if (!user) {
-      res.status(401).json({ message: 'No such user found' })
+      res.status(401).json({ success: false, message: 'No such user found' })
     }
     if (user && bcrypt.compareSync(password, user.password)) {
       const tokenData = createToken({ user, jwtOptions })
+      res.cookie('refresh_token', tokenData.refreshToken, {
+        httpOnly: true,
+        secure: (process.env.NODE_ENV || 'development') !== 'development',
+      })
       res.json({
+        success: true,
         message: 'ok',
-        ...tokenData,
+        token: tokenData.token,
+        tokenExpiry: tokenData.tokenExpiry,
       })
     } else {
-      res.status(401).json({ message: 'Credentials are incorrect' })
+      res.status(401).json({ success: false, message: 'Credentials are incorrect' })
     }
     return
   }
-  res.status(400).json({ message: 'wrong parameters' })
+  res.status(400).json({ success: false, message: 'wrong parameters' })
 }

@@ -27,11 +27,10 @@ const schema = buildSchema(`
   }
 
   type Token {
+    success: Boolean!
     message: String!
     token: String!
     tokenExpiry: DateTime!
-    refreshToken: String!
-    refreshTokenExpiry: DateTime!
   }
 
   input UpdateTodoInput {

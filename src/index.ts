@@ -10,12 +10,13 @@ import * as passportJWT from 'passport-jwt'
 import * as cors from 'cors'
 import * as compression from 'compression'
 import * as helmet from 'helmet'
+import * as cookieParser from 'cookie-parser'
 
 import * as expressGraphQL from 'express-graphql'
 
 import { IncomingMessage } from 'http'
 
-import { check } from 'express-validator'
+import { check, cookie } from 'express-validator'
 
 import { createConnection, getRepository } from 'typeorm'
 
@@ -52,6 +53,7 @@ createConnection().then(connection => {
   app.use(passport.initialize())
   app.use(cors())
   app.use(compression())
+  app.use(cookieParser())
   app.use(helmet())
 
   app.use(bodyParser.json())
@@ -149,8 +151,7 @@ createConnection().then(connection => {
   app.post(
     '/refresh',
     [
-      passport.authenticate('jwt', { session: false }),
-      check('refreshToken')
+      cookie('refresh_token')
         .notEmpty()
         .isJWT(),
     ],
