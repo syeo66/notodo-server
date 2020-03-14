@@ -94,7 +94,7 @@ const resolvers = {
       method: 'POST',
       data: new URLSearchParams({ name: username, password }),
     })
-    ctx.response.headers.cookie('refresh_token', response.headers.cookie('refresh_token'))
+    ctx.response.cookie('refresh_token', response.headers.cookie('refresh_token'))
     return response.data
   },
   refresh: async ({ refreshToken }, context) => {
