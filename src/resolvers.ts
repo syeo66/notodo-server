@@ -87,12 +87,14 @@ const resolvers = {
     })
     return response.data.user
   },
-  login: async ({ username, password }) => {
+  login: async ({ username, password }, context) => {
+    const ctx = context()
     const response = await axios({
       url: `http://localhost:${PORT}/login`,
       method: 'POST',
       data: new URLSearchParams({ name: username, password }),
     })
+    ctx.response.headers.cookie('refresh_token', response.headers.cookie('refresh_token'))
     return response.data
   },
   refresh: async ({ refreshToken }, context) => {
