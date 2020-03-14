@@ -51,7 +51,7 @@ createConnection().then(connection => {
   passport.use(strategy)
 
   app.use(passport.initialize())
-  app.use(cors())
+  app.use(cors({ origin: '*', credentials: true }))
   app.use(compression())
   app.use(cookieParser())
   app.use(helmet())
