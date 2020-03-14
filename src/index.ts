@@ -14,7 +14,7 @@ import * as cookieParser from 'cookie-parser'
 
 import * as expressGraphQL from 'express-graphql'
 
-import { IncomingMessage } from 'http'
+import { IncomingMessage, OutgoingMessage } from 'http'
 
 import { check, cookie } from 'express-validator'
 
@@ -27,9 +27,10 @@ import { createTodo, getTodos, getTodo, deleteTodo, updateTodo, getCurrentTodos,
 import resolvers from './resolvers'
 import schema from './schema'
 
-const context = (req: IncomingMessage) => {
+const context = (req: IncomingMessage, res: OutgoingMessage) => {
   const { authorization: token } = req.headers
-  return { token }
+  res.setHeader('cookie', req.headers.cookie || '')
+  return { token, req, res }
 }
 
 createConnection().then(connection => {
@@ -61,11 +62,11 @@ createConnection().then(connection => {
 
   app.use(
     '/graphql',
-    expressGraphQL(req => ({
+    expressGraphQL(request => ({
       schema,
       graphiql: true,
       rootValue: resolvers,
-      context: () => context(req),
+      context: ({ req, res }) => context(req, res),
       customFormatErrorFn: err => {
         const extractStatus = /status code ([0-9]{3})/.exec(err.message)
         return { ...err, statusCode: extractStatus && extractStatus[1] ? Number(extractStatus[1]) : 200 }
