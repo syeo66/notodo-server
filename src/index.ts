@@ -62,7 +62,7 @@ createConnection().then(connection => {
 
   app.use(
     '/graphql',
-    expressGraphQL(request => ({
+    expressGraphQL(req => ({
       schema,
       graphiql: true,
       rootValue: resolvers,
