@@ -29,7 +29,7 @@ import schema from './schema'
 
 const context = (req: IncomingMessage, res: OutgoingMessage) => {
   const { authorization: token } = req.headers
-  return { token }
+  return { token, req, res }
 }
 
 createConnection().then(connection => {
@@ -51,7 +51,7 @@ createConnection().then(connection => {
   passport.use(strategy)
 
   app.use(passport.initialize())
-  app.use(cors({ origin: '*', credentials: true }))
+  app.use(cors({ origin: true, credentials: true, allowedHeaders: ['Authorization'] }))
   app.use(compression())
   app.use(cookieParser())
   app.use(helmet())
@@ -61,11 +61,11 @@ createConnection().then(connection => {
 
   app.use(
     '/graphql',
-    expressGraphQL(req => ({
+    expressGraphQL((req, res) => ({
       schema,
       graphiql: true,
       rootValue: resolvers,
-      context: ({ req, res }) => context(req, res),
+      context: () => context(req, res),
       customFormatErrorFn: err => {
         const extractStatus = /status code ([0-9]{3})/.exec(err.message)
         return { ...err, statusCode: extractStatus && extractStatus[1] ? Number(extractStatus[1]) : 200 }

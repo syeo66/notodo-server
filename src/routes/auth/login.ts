@@ -26,6 +26,8 @@ export const login = (jwtOptions: { secretOrKey: string }) => async (req: Reques
         message: 'ok',
         token: tokenData.token,
         tokenExpiry: tokenData.tokenExpiry,
+        refreshToken: tokenData.refreshToken,
+        refreshTokenExpiry: tokenData.refreshTokenExpiry,
       })
     } else {
       res.status(401).json({ success: false, message: 'Credentials are incorrect' })

@@ -1,5 +1,5 @@
 import axios from 'axios'
-import { format } from 'date-fns'
+import { format, parseISO } from 'date-fns'
 import { URLSearchParams } from 'url'
 
 // TODO: make hostname configurable, too
@@ -93,10 +93,19 @@ const resolvers = {
       method: 'POST',
       data: new URLSearchParams({ name: username, password }),
     })
+
+    const { res } = context()
+
+    res.cookie('refresh_token', response.data.refreshToken, {
+      httpOnly: true,
+      secure: (process.env.NODE_ENV || 'development') !== 'development',
+      expires: parseISO(response.data.refreshTokenExpiry),
+    })
+
     return response.data
   },
   refresh: async ({ refreshToken }, context) => {
-    const { token } = context()
+    const { token, res } = context()
     const response = await axios({
       url: `http://localhost:${PORT}/refresh`,
       method: 'POST',
@@ -105,6 +114,13 @@ const resolvers = {
       },
       data: new URLSearchParams({ refreshToken }),
     })
+
+    res.cookie('refresh_token', response.data.refreshToken, {
+      httpOnly: true,
+      secure: (process.env.NODE_ENV || 'development') !== 'development',
+      expires: parseISO(response.data.refreshTokenExpiry),
+    })
+
     return response.data
   },
 }

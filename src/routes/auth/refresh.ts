@@ -52,5 +52,7 @@ export const refresh = (jwtOptions: { secretOrKey: string }) => (req: Request, r
     message: 'ok',
     token: tokenData.token,
     tokenExpiry: tokenData.tokenExpiry,
+    refreshToken: tokenData.refreshToken,
+    refreshTokenExpiry: tokenData.refreshTokenExpiry,
   })
 }
