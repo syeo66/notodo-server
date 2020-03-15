@@ -43,7 +43,7 @@ const schema = buildSchema(`
     allTodos: [Todo!]!
     login(username: String!, password: String!): Token!
     profile: User!
-    refresh(refreshToken: String!): Token!
+    refresh(): Token!
     todo(id: String!): Todo!
     todos(date: String): [Todo!]!
   }

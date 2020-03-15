@@ -1,6 +1,7 @@
 import axios from 'axios'
 import { format, parseISO } from 'date-fns'
 import { URLSearchParams } from 'url'
+import { IncomingMessage, ServerResponse } from 'http'
 
 // TODO: make hostname configurable, too
 const PORT = process.env.port || 3000
@@ -104,15 +105,15 @@ const resolvers = {
 
     return response.data
   },
-  refresh: async ({ refreshToken }, context) => {
-    const { token, res } = context()
+  refresh: async (_, context) => {
+    const { token, res, req } = context()
     const response = await axios({
       url: `http://localhost:${PORT}/refresh`,
       method: 'POST',
       headers: {
         Authorization: token,
+        cookie: 'refresh_token=' + req.cookies.refresh_token,
       },
-      data: new URLSearchParams({ refreshToken }),
     })
 
     res.cookie('refresh_token', response.data.refreshToken, {
