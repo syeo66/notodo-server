@@ -39,7 +39,7 @@ export const refresh = (jwtOptions: { secretOrKey: string }) => (req: Request, r
   }
 
   if (id !== (payload as { id: string }).id) {
-    return res.status(422).json({ success: false })
+    return res.status(401).json({ success: false, errors: ['The user does not match'] })
   }
 
   const tokenData = createToken({ user: { id }, jwtOptions })
