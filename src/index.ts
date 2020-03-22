@@ -50,8 +50,16 @@ createConnection().then(connection => {
   })
   passport.use(strategy)
 
+  const corsOptions = {
+    allowedHeaders: ['Authorization'],
+    credentials: true,
+    origin: true,
+  }
+
   app.use(passport.initialize())
-  app.use(cors({ origin: true, credentials: true, allowedHeaders: ['Authorization'] }))
+  app.use(cors(corsOptions))
+  app.options('*', cors(corsOptions))
+
   app.use(compression())
   app.use(cookieParser())
   app.use(helmet())
