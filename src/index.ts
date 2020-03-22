@@ -53,6 +53,7 @@ createConnection().then(connection => {
   const corsOptions = {
     allowedHeaders: ['Authorization'],
     credentials: true,
+    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
     origin: true,
   }
 
