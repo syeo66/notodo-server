@@ -53,13 +53,10 @@ createConnection().then(connection => {
   const corsOptions = {
     allowedHeaders: ['Authorization'],
     credentials: true,
-    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
     origin: true,
   }
 
   app.use(passport.initialize())
-  app.use(cors(corsOptions))
-  app.options('*', cors(corsOptions))
 
   app.use(compression())
   app.use(cookieParser())
@@ -70,6 +67,7 @@ createConnection().then(connection => {
 
   app.use(
     '/graphql',
+    cors(corsOptions),
     expressGraphQL((req, res) => ({
       schema,
       graphiql: true,
