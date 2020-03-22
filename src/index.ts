@@ -51,7 +51,7 @@ createConnection().then(connection => {
   passport.use(strategy)
 
   const corsOptions = {
-    allowedHeaders: ['Authorization'],
+    allowedHeaders: ['Authorization', 'Content-Type'],
     credentials: true,
     origin: true,
   }
